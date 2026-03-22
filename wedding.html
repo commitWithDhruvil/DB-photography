@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Photography - DB Photography</title>
+    <meta name="description" content="Wedding photography portfolio by DB Photography">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .back-link {
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-link:hover {
+            color: #c0392b;
+        }
+
+        .gallery-container {
+            max-width: 1200px;
+            margin: 100px auto 2rem;
+            padding: 0 2rem;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #2c3e50;
+        }
+
+        .drive-embed {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .gallery-container {
+                margin-top: 80px;
+                padding: 0 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .drive-embed {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">DB Photography</a>
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Portfolio
+            </a>
+        </nav>
+    </header>
+
+    <div class="gallery-container">
+        <h1>Wedding Moments</h1>
+        <div id="uploadedImages" class="images-grid"></div>
+    </div>
+
+    <style>
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            grid-auto-rows: 280px;
+            margin-top: 2rem;
+        }
+
+        .image-card {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            grid-column: span 1;
+            grid-row: span 1;
+        }
+
+        .image-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        @media (max-width: 1024px) {
+            .images-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 0.8rem;
+                grid-auto-rows: 220px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .images-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 0.6rem;
+                grid-auto-rows: 150px;
+            }
+
+            .gallery-container {
+                margin-top: 80px;
+                padding: 0 1rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+
+    <script>
+        // Display uploaded images from admin
+        function displayUploadedImages() {
+            const images = JSON.parse(localStorage.getItem('adminImages')) || [];
+            const uploadedImages = document.getElementById('uploadedImages');
+
+            if (images.length === 0) {
+                uploadedImages.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #999;">No photos uploaded yet. Check back soon!</div>';
+                return;
+            }
+
+            uploadedImages.innerHTML = '';
+
+            images.forEach((image) => {
+                const imageCard = document.createElement('div');
+                imageCard.className = 'image-card';
+                imageCard.innerHTML = `
+                    <img src="${image.url}" alt="Wedding Photo" onclick="openImageModal(this.src)">
+                `;
+                uploadedImages.appendChild(imageCard);
+            });
+        }
+
+        // Open image in modal
+        function openImageModal(src) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.95);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 999;
+                padding: 2rem;
+            `;
+            
+            modal.innerHTML = `
+                <div style="position: relative; max-width: 90vw; max-height: 90vh;">
+                    <img src="${src}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    <button onclick="this.parentElement.parentElement.remove()" style="
+                        position: absolute;
+                        top: -40px;
+                        right: 0;
+                        background: white;
+                        border: none;
+                        font-size: 2rem;
+                        cursor: pointer;
+                        color: white;
+                        padding: 0;
+                        width: 40px;
+                        height: 40px;
+                    ">×</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+        }
+
+        // Load images on page load
+        displayUploadedImages();
+    </script>
+</body>
+</html>
