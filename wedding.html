@@ -121,6 +121,7 @@
             gap: 1rem;
             grid-auto-rows: 280px;
             margin-top: 2rem;
+            grid-auto-flow: dense;
         }
 
         .image-card {
@@ -132,6 +133,16 @@
             cursor: pointer;
             grid-column: span 1;
             grid-row: span 1;
+        }
+
+        /* Landscape images span 2 columns */
+        .image-card.landscape {
+            grid-column: span 2;
+        }
+
+        /* Tall portrait images span 2 rows */
+        .image-card.portrait-tall {
+            grid-row: span 2;
         }
 
         .image-card:hover {
@@ -152,6 +163,14 @@
                 gap: 0.8rem;
                 grid-auto-rows: 220px;
             }
+
+            .image-card.landscape {
+                grid-column: span 1;
+            }
+
+            .image-card.portrait-tall {
+                grid-row: span 1;
+            }
         }
 
         @media (max-width: 768px) {
@@ -159,6 +178,14 @@
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                 gap: 0.6rem;
                 grid-auto-rows: 150px;
+            }
+
+            .image-card.landscape {
+                grid-column: span 1;
+            }
+
+            .image-card.portrait-tall {
+                grid-row: span 1;
             }
 
             .gallery-container {
@@ -191,9 +218,30 @@
                     images.forEach((image) => {
                         const imageCard = document.createElement('div');
                         imageCard.className = 'image-card';
-                        imageCard.innerHTML = `
-                            <img src="${image.url}" alt="Wedding Photo" onclick="openImageModal(this.src)">
-                        `;
+                        
+                        const imgElement = document.createElement('img');
+                        imgElement.src = image.url;
+                        imgElement.alt = 'Wedding Photo';
+                        
+                        // Detect aspect ratio when image loads
+                        imgElement.onload = function() {
+                            const aspectRatio = this.naturalWidth / this.naturalHeight;
+                            
+                            // Landscape: width > height (aspect ratio > 1)
+                            if (aspectRatio > 1.2) {
+                                imageCard.classList.add('landscape');
+                            }
+                            // Tall portrait: height significantly > width (aspect ratio < 0.7)
+                            else if (aspectRatio < 0.7) {
+                                imageCard.classList.add('portrait-tall');
+                            }
+                        };
+                        
+                        imgElement.addEventListener('click', function() {
+                            openImageModal(this.src);
+                        });
+                        
+                        imageCard.appendChild(imgElement);
                         uploadedImages.appendChild(imageCard);
                     });
                 })
