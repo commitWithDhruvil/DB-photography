@@ -173,26 +173,34 @@
     </style>
 
     <script>
-        // Display uploaded images from admin
+        // Display uploaded images from images.json
         function displayUploadedImages() {
-            const images = JSON.parse(localStorage.getItem('adminImages')) || [];
             const uploadedImages = document.getElementById('uploadedImages');
+            
+            // Load images from images.json
+            fetch('images.json')
+                .then(response => response.json())
+                .then(images => {
+                    if (images.length === 0) {
+                        uploadedImages.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #999;">No photos uploaded yet. Check back soon!</div>';
+                        return;
+                    }
 
-            if (images.length === 0) {
-                uploadedImages.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #999;">No photos uploaded yet. Check back soon!</div>';
-                return;
-            }
+                    uploadedImages.innerHTML = '';
 
-            uploadedImages.innerHTML = '';
-
-            images.forEach((image) => {
-                const imageCard = document.createElement('div');
-                imageCard.className = 'image-card';
-                imageCard.innerHTML = `
-                    <img src="${image.url}" alt="Wedding Photo" onclick="openImageModal(this.src)">
-                `;
-                uploadedImages.appendChild(imageCard);
-            });
+                    images.forEach((image) => {
+                        const imageCard = document.createElement('div');
+                        imageCard.className = 'image-card';
+                        imageCard.innerHTML = `
+                            <img src="${image.url}" alt="Wedding Photo" onclick="openImageModal(this.src)">
+                        `;
+                        uploadedImages.appendChild(imageCard);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading images:', error);
+                    uploadedImages.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #999;">Error loading photos. Please try again later.</div>';
+                });
         }
 
         // Open image in modal
